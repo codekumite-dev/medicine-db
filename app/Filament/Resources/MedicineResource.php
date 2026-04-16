@@ -2,26 +2,27 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\ApprovalStatusEnum;
+use App\Enums\DosageFormEnum;
 use App\Filament\Resources\MedicineResource\Pages;
 use App\Filament\Resources\MedicineResource\RelationManagers;
+use App\Models\AuditLog;
 use App\Models\Medicine;
 use Filament\Forms;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use App\Enums\DosageFormEnum;
-use App\Enums\ApprovalStatusEnum;
-use Filament\Forms\Components\Tabs;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Actions\Action;
-use App\Models\AuditLog;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class MedicineResource extends Resource
 {
     protected static ?string $model = Medicine::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $navigationGroup = 'Catalog';
 
     public static function form(Form $form): Form
@@ -58,7 +59,7 @@ class MedicineResource extends Resource
                                         'OTC' => 'OTC',
                                         'Schedule H' => 'Schedule H',
                                         'Schedule H1' => 'Schedule H1',
-                                        'Schedule X' => 'Schedule X'
+                                        'Schedule X' => 'Schedule X',
                                     ]),
                                 Forms\Components\Toggle::make('rx_required'),
                                 Forms\Components\TextInput::make('rx_required_header'),
@@ -71,14 +72,14 @@ class MedicineResource extends Resource
                                     ->searchable(),
                                 Forms\Components\TextInput::make('price')->numeric(),
                                 Forms\Components\TextInput::make('mrp')->numeric(),
-                                Forms\Components\Select::make('currency')->options(['INR'=>'INR', 'USD'=>'USD'])->default('INR'),
+                                Forms\Components\Select::make('currency')->options(['INR' => 'INR', 'USD' => 'USD'])->default('INR'),
                             ]),
                         Tabs\Tab::make('Packaging')
                             ->schema([
                                 Forms\Components\TextInput::make('pack_size_label'),
                                 Forms\Components\TextInput::make('quantity')->numeric(),
                                 Forms\Components\Select::make('quantity_unit')
-                                    ->options(['tablets'=>'tablets', 'capsules'=>'capsules', 'ml'=>'ml', 'mg'=>'mg', 'units'=>'units']),
+                                    ->options(['tablets' => 'tablets', 'capsules' => 'capsules', 'ml' => 'ml', 'mg' => 'mg', 'units' => 'units']),
                             ]),
                         Tabs\Tab::make('Identifiers & Regulatory')
                             ->schema([
@@ -88,7 +89,7 @@ class MedicineResource extends Resource
                                 Forms\Components\TextInput::make('ndc_code'),
                                 Forms\Components\TextInput::make('storage_conditions'),
                                 Forms\Components\TextInput::make('shelf_life'),
-                                Forms\Components\Select::make('country_of_origin')->options(['IN'=>'India', 'US'=>'USA', 'UK'=>'UK'])->default('IN'),
+                                Forms\Components\Select::make('country_of_origin')->options(['IN' => 'India', 'US' => 'USA', 'UK' => 'UK'])->default('IN'),
                             ]),
                         Tabs\Tab::make('Publishing')
                             ->schema([
@@ -98,7 +99,7 @@ class MedicineResource extends Resource
                                 Forms\Components\Toggle::make('is_discontinued'),
                                 Forms\Components\DateTimePicker::make('published_at'),
                             ]),
-                    ])->columnSpanFull()
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -126,18 +127,18 @@ class MedicineResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Action::make('publish')
-                    ->visible(fn() => auth()->user()?->hasAnyRole(['super-admin', 'admin', 'clinical-editor']))
+                    ->visible(fn () => auth()->user()?->hasAnyRole(['super-admin', 'admin', 'clinical-editor']))
                     ->action(function (Medicine $record) {
                         $record->update([
                             'approval_status' => ApprovalStatusEnum::Published,
-                            'published_at'    => now(),
+                            'published_at' => now(),
                         ]);
                         AuditLog::record('published', $record);
                     }),
                 Action::make('archive')
-                    ->visible(fn() => auth()->user()?->hasAnyRole(['super-admin', 'admin']))
+                    ->visible(fn () => auth()->user()?->hasAnyRole(['super-admin', 'admin']))
                     ->requiresConfirmation()
-                    ->action(function(Medicine $record) {
+                    ->action(function (Medicine $record) {
                         $record->update(['approval_status' => ApprovalStatusEnum::Archived]);
                         AuditLog::record('archived', $record);
                     }),
@@ -146,10 +147,10 @@ class MedicineResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('publish_selected')
                         ->label('Publish selected')
-                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => $records->each->update(['approval_status' => ApprovalStatusEnum::Published, 'published_at' => now()])),
+                        ->action(fn (Collection $records) => $records->each->update(['approval_status' => ApprovalStatusEnum::Published, 'published_at' => now()])),
                     Tables\Actions\BulkAction::make('mark_discontinued')
                         ->label('Mark discontinued')
-                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => $records->each->update(['is_discontinued' => true])),
+                        ->action(fn (Collection $records) => $records->each->update(['is_discontinued' => true])),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

@@ -20,9 +20,13 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
         $this->hideSensitiveRequestDetails();
 
         $isLocal = $this->app->environment('local');
+        $captureLogsInNonLocal = (bool) config('telescope.capture_logs_in_non_local', true);
 
-        Telescope::filter(function (IncomingEntry $entry) use ($isLocal) {
+        Telescope::filter(function (IncomingEntry $entry) use ($isLocal, $captureLogsInNonLocal) {
+            $isLogEntry = method_exists($entry, 'isLog') ? $entry->isLog() : false;
+
             return $isLocal ||
+                   ($captureLogsInNonLocal && $isLogEntry) ||
                    $entry->isReportableException() ||
                    $entry->isFailedRequest() ||
                    $entry->isFailedJob() ||

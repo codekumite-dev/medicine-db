@@ -20,6 +20,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Capture Logs In Non-Local Environments
+    |--------------------------------------------------------------------------
+    |
+    | When true, Telescope will keep log entries in non-local environments
+    | based on the provider filter. Disable this if you only want failures.
+    |
+    */
+    'capture_logs_in_non_local' => env('TELESCOPE_CAPTURE_LOGS_IN_NON_LOCAL', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Telescope Domain
     |--------------------------------------------------------------------------
     |
@@ -177,7 +188,7 @@ return [
 
         Watchers\LogWatcher::class => [
             'enabled' => env('TELESCOPE_LOG_WATCHER', true),
-            'level' => 'error',
+            'level' => env('TELESCOPE_LOG_LEVEL', 'debug'),
         ],
 
         Watchers\MailWatcher::class => env('TELESCOPE_MAIL_WATCHER', true),

@@ -1,11 +1,10 @@
 <?php
 
+use App\Enums\ApprovalStatusEnum;
+use App\Enums\DosageFormEnum;
+use App\Models\ApiClient;
 use App\Models\Manufacturer;
 use App\Models\Medicine;
-use App\Models\ApiClient;
-use App\Enums\DosageFormEnum;
-use App\Enums\ApprovalStatusEnum;
-use Illuminate\Support\Str;
 
 echo "Seeding test data...\n";
 
@@ -45,6 +44,6 @@ $apiClient = ApiClient::create([
 $token = $apiClient->createToken('test_token', ['medicines:read', 'medicines:search']);
 
 echo "Test Data Seeded!\n";
-echo "Manufacturer ID: " . $manufacturer->id . "\n";
-echo "Medicine ID: " . $medicine->id . "\n";
-echo "API Token: " . $token->plainTextToken . "\n";
+echo 'Manufacturer ID: '.$manufacturer->id."\n";
+echo 'Medicine ID: '.$medicine->id."\n";
+echo 'API Token: '.$token->plainTextToken."\n";

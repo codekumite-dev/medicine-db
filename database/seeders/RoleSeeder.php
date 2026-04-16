@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
-use App\Models\User;
 
 class RoleSeeder extends Seeder
 {
@@ -13,6 +13,9 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
+        $adminEmail = env('ADMIN_EMAIL', 'admin@example.com');
+        $adminPassword = env('ADMIN_PASSWORD', 'changeme');
+
         $roles = [
             'super-admin',
             'admin',
@@ -28,14 +31,20 @@ class RoleSeeder extends Seeder
         }
 
         $admin = User::firstOrCreate(
-            ['email' => env('ADMIN_EMAIL', 'admin@example.com')],
+            ['email' => $adminEmail],
             [
                 'name' => 'Super Admin',
-                'password' => bcrypt(env('ADMIN_PASSWORD', 'changeme')),
+                'password' => bcrypt($adminPassword),
                 'is_active' => true,
             ]
         );
 
         $admin->assignRole('super-admin');
+
+        if ($this->command) {
+            $this->command->info('Admin Login Credentials:');
+            $this->command->info('Email: '.$adminEmail);
+            $this->command->info('Password: '.$adminPassword);
+        }
     }
 }

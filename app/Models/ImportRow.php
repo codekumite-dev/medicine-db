@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ImportRow extends Model
@@ -11,13 +11,15 @@ class ImportRow extends Model
     use HasUuids;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
+
     protected $guarded = [];
 
     protected $casts = [
-        'raw_data'    => 'array',
+        'raw_data' => 'array',
         'mapped_data' => 'array',
-        'errors'      => 'array',
+        'errors' => 'array',
     ];
 
     public function importJob(): BelongsTo

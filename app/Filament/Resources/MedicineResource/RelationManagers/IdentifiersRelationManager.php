@@ -7,8 +7,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class IdentifiersRelationManager extends RelationManager
 {
@@ -19,7 +17,7 @@ class IdentifiersRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\Select::make('identifier_type')
-                    ->options(['barcode'=>'Barcode', 'gtin'=>'GTIN', 'gs1'=>'GS1', 'internal_sku'=>'Internal SKU', 'regulatory_code'=>'Regulatory Code', 'ndc'=>'NDC'])
+                    ->options(['barcode' => 'Barcode', 'gtin' => 'GTIN', 'gs1' => 'GS1', 'internal_sku' => 'Internal SKU', 'regulatory_code' => 'Regulatory Code', 'ndc' => 'NDC'])
                     ->required(),
                 Forms\Components\TextInput::make('identifier_value')
                     ->required()

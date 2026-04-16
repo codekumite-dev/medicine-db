@@ -19,8 +19,11 @@ return new class extends Migration
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->timestamp('created_at');
-        
-            $table->index(['auditable_type', 'auditable_id']);
+
+            $table->index(
+                ['auditable_type', 'auditable_id'],
+                'audit_logs_auditable_idx'
+            );
             $table->index('user_id');
             $table->index('action');
             $table->index('created_at');

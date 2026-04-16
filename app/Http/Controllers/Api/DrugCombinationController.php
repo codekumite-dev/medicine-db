@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\DrugCombination;
 use App\Http\Resources\Api\DrugCombinationResource;
+use App\Models\DrugCombination;
+use Illuminate\Http\Request;
 
 class DrugCombinationController extends Controller
 {
@@ -23,9 +23,9 @@ class DrugCombinationController extends Controller
     public function show(Request $request, string $slug)
     {
         $this->checkAbility($request, 'combinations:read');
-        
+
         $combination = DrugCombination::published()
-            ->with(['sections' => fn($q) => $q->where('is_visible', true), 'items.medicine'])
+            ->with(['sections' => fn ($q) => $q->where('is_visible', true), 'items.medicine'])
             ->where('slug', $slug)
             ->firstOrFail();
 
@@ -37,14 +37,14 @@ class DrugCombinationController extends Controller
         $this->checkAbility($request, 'combinations:read');
 
         $combination = DrugCombination::published()
-            ->with(['faqs' => fn($q) => $q->where('is_published', true)])
+            ->with(['faqs' => fn ($q) => $q->where('is_published', true)])
             ->where('slug', $slug)
             ->firstOrFail();
 
         return $this->wrapResponse($combination->faqs->map(function ($faq) {
             return [
                 'question' => $faq->question,
-                'answer'   => $faq->answer,
+                'answer' => $faq->answer,
             ];
         }));
     }
@@ -60,8 +60,8 @@ class DrugCombinationController extends Controller
         $section = $combination->sections()->where('section_key', $key)->where('is_visible', true)->firstOrFail();
 
         return $this->wrapResponse([
-            'key'     => $section->section_key,
-            'title'   => $section->section_title,
+            'key' => $section->section_key,
+            'title' => $section->section_title,
             'content' => $section->content,
         ]);
     }

@@ -6,18 +6,18 @@ use App\Filament\Resources\ApiClientResource\Pages;
 use App\Models\ApiClient;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Str;
+use Filament\Tables\Table;
 
 class ApiClientResource extends Resource
 {
     protected static ?string $model = ApiClient::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-key';
+
     protected static ?string $navigationGroup = 'System';
 
     public static function form(Form $form): Form
@@ -80,7 +80,7 @@ class ApiClientResource extends Resource
                     ->icon('heroicon-o-key')
                     ->requiresConfirmation()
                     ->action(function (ApiClient $record) {
-                        $tokenName = $record->name . '_' . now()->format('Ymd');
+                        $tokenName = $record->name.'_'.now()->format('Ymd');
                         $token = $record->createToken(
                             $tokenName,
                             $record->abilities ?? ['medicines:read']
@@ -88,7 +88,7 @@ class ApiClientResource extends Resource
 
                         Notification::make()
                             ->title('API Key Issued')
-                            ->body('Token: ' . $token->plainTextToken . ' — Copy this now, it will not be shown again.')
+                            ->body('Token: '.$token->plainTextToken.' — Copy this now, it will not be shown again.')
                             ->warning()
                             ->persistent()
                             ->send();

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('error_summary')->nullable();
             $table->uuid('created_by');
             $table->timestamps();
-        
+
             $table->index('status');
             $table->index('created_by');
         });

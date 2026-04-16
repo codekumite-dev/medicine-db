@@ -19,8 +19,11 @@ return new class extends Migration
             $table->json('errors')->nullable();
             $table->uuid('resulting_medicine_id')->nullable();
             $table->timestamps();
-        
-            $table->index(['import_job_id', 'status']);
+
+            $table->index(
+                ['import_job_id', 'status'],
+                'import_rows_job_status_idx'
+            );
             $table->index('row_number');
         });
     }

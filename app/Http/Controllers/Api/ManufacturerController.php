@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Manufacturer;
 use App\Http\Resources\Api\ManufacturerResource;
+use App\Models\Manufacturer;
+use Illuminate\Http\Request;
 
 class ManufacturerController extends Controller
 {
@@ -24,6 +24,7 @@ class ManufacturerController extends Controller
     {
         $this->checkAbility($request, 'manufacturers:read');
         $manufacturer = Manufacturer::where('is_active', true)->findOrFail($uuid);
+
         return $this->wrapResource(new ManufacturerResource($manufacturer));
     }
 }

@@ -2,31 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Enums\ApprovalStatusEnum;
+use App\Enums\DosageFormEnum;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
-use App\Enums\DosageFormEnum;
-use App\Enums\ApprovalStatusEnum;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class Medicine extends Model
 {
     use HasUuids, SoftDeletes;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
+
     protected $guarded = [];
 
     protected $casts = [
-        'rx_required'     => 'boolean',
+        'rx_required' => 'boolean',
         'is_discontinued' => 'boolean',
-        'price'           => 'decimal:2',
-        'mrp'             => 'decimal:2',
-        'quantity'        => 'integer',
-        'published_at'    => 'datetime',
-        'dosage_form'     => DosageFormEnum::class,
+        'price' => 'decimal:2',
+        'mrp' => 'decimal:2',
+        'quantity' => 'integer',
+        'published_at' => 'datetime',
+        'dosage_form' => DosageFormEnum::class,
         'approval_status' => ApprovalStatusEnum::class,
     ];
 
@@ -48,15 +51,15 @@ class Medicine extends Model
     protected static function booted(): void
     {
         static::saved(function (Medicine $medicine) {
-            \Illuminate\Support\Facades\Cache::forget("medicine:{$medicine->id}");
-            \Illuminate\Support\Facades\Cache::forget("medicine:slug:{$medicine->slug}");
+            Cache::forget("medicine:{$medicine->id}");
+            Cache::forget("medicine:slug:{$medicine->slug}");
         });
     }
 
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('approval_status', ApprovalStatusEnum::Published)
-                     ->whereNotNull('published_at');
+            ->whereNotNull('published_at');
     }
 
     public function scopeActive(Builder $query): Builder

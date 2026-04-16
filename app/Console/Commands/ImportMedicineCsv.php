@@ -17,7 +17,8 @@ class ImportMedicineCsv extends Command
 
     // In-memory maps for deduplication
     private array $manufacturerMap = [];   // name → uuid
-    private array $slugCounter     = [];   // slug → int counter (for uniqueness within run)
+
+    private array $slugCounter = [];   // slug → int counter (for uniqueness within run)
 
     public function handle(): int
     {
@@ -25,6 +26,7 @@ class ImportMedicineCsv extends Command
         $filePath = base_path($this->argument('file'));
         if (! file_exists($filePath)) {
             $this->error("File not found: {$filePath}");
+
             return self::FAILURE;
         }
 
@@ -54,7 +56,7 @@ class ImportMedicineCsv extends Command
         foreach ($existing as $row) {
             $this->manufacturerMap[$row['name']] = $row['id'];
         }
-        $this->info('Loaded ' . count($this->manufacturerMap) . ' existing manufacturers.');
+        $this->info('Loaded '.count($this->manufacturerMap).' existing manufacturers.');
 
         // ── 6. Pre-load existing slugs into memory (collision guard) ──────
         $this->info('Pre-loading existing medicine slugs…');
@@ -69,14 +71,15 @@ class ImportMedicineCsv extends Command
         if (! $headers) {
             $this->error('CSV appears to be empty.');
             fclose($handle);
+
             return self::FAILURE;
         }
-        $headers = array_map(fn($h) => trim($h, " \t\n\r\0\x0B\xEF\xBB\xBF"), $headers);
-        $this->info('Columns: ' . implode(', ', $headers));
+        $headers = array_map(fn ($h) => trim($h, " \t\n\r\0\x0B\xEF\xBB\xBF"), $headers);
+        $this->info('Columns: '.implode(', ', $headers));
 
-        $totalLines = (int) shell_exec('wc -l < ' . escapeshellarg($filePath));
-        $totalRows  = max(0, $totalLines - 1);
-        $this->info("Estimated rows: " . number_format($totalRows));
+        $totalLines = (int) shell_exec('wc -l < '.escapeshellarg($filePath));
+        $totalRows = max(0, $totalLines - 1);
+        $this->info('Estimated rows: '.number_format($totalRows));
 
         // ── 8. Prepare statements ─────────────────────────────────────────
         $mfrStmt = $pdo->prepare(
@@ -95,29 +98,44 @@ class ImportMedicineCsv extends Command
         );
 
         // ── 9. Stream and batch-insert ────────────────────────────────────
-        $chunkSize  = (int) $this->option('chunk');
-        $bar        = $this->output->createProgressBar($totalRows);
+        $chunkSize = (int) $this->option('chunk');
+        $bar = $this->output->createProgressBar($totalRows);
         $bar->setFormat(' %current%/%max% [%bar%] %percent:3s%% • %elapsed:6s%');
         $bar->start();
 
-        $imported  = 0;
-        $skipped   = 0;
-        $rowBatch  = [];
-        $mfrBatch  = [];
-        $now       = date('Y-m-d H:i:s');
-        $source    = basename($filePath);
+        $imported = 0;
+        $skipped = 0;
+        $rowBatch = [];
+        $mfrBatch = [];
+        $now = date('Y-m-d H:i:s');
+        $source = basename($filePath);
 
         while (($row = fgetcsv($handle)) !== false) {
-            if (count(array_filter($row)) === 0) { $skipped++; $bar->advance(); continue; }
+            if (count(array_filter($row)) === 0) {
+                $skipped++;
+                $bar->advance();
+
+                continue;
+            }
 
             $data = array_combine($headers, array_pad($row, count($headers), null));
-            if (! $data) { $skipped++; $bar->advance(); continue; }
+            if (! $data) {
+                $skipped++;
+                $bar->advance();
+
+                continue;
+            }
 
             $name = trim($data['name'] ?? '');
-            if ($name === '') { $skipped++; $bar->advance(); continue; }
+            if ($name === '') {
+                $skipped++;
+                $bar->advance();
+
+                continue;
+            }
 
             // Manufacturer
-            $mfrName       = trim($data['manufacturer_name'] ?? '');
+            $mfrName = trim($data['manufacturer_name'] ?? '');
             $manufacturerId = null;
             if ($mfrName !== '') {
                 if (! isset($this->manufacturerMap[$mfrName])) {
@@ -134,10 +152,10 @@ class ImportMedicineCsv extends Command
 
             // Numeric fields
             $price = is_numeric($data['price'] ?? '') ? (float) $data['price'] : null;
-            $qty   = is_numeric($data['quantity'] ?? '') ? (int) $data['quantity'] : null;
+            $qty = is_numeric($data['quantity'] ?? '') ? (int) $data['quantity'] : null;
 
             // Rx
-            $rxHeader  = trim($data['rx_required_header'] ?? '');
+            $rxHeader = trim($data['rx_required_header'] ?? '');
             $rxRequired = (! empty($rxHeader) && strtolower($rxHeader) !== 'otc') ? 1 : 0;
 
             // Discontinued
@@ -228,14 +246,16 @@ class ImportMedicineCsv extends Command
      */
     private function makeSlug(string $name): string
     {
-        $base = Str::slug($name) ?: 'medicine-' . Str::random(6);
+        $base = Str::slug($name) ?: 'medicine-'.Str::random(6);
 
         if (! array_key_exists($base, $this->slugCounter)) {
             $this->slugCounter[$base] = 0;
+
             return $base;
         }
 
         $this->slugCounter[$base]++;
-        return $base . '-' . $this->slugCounter[$base];
+
+        return $base.'-'.$this->slugCounter[$base];
     }
 }

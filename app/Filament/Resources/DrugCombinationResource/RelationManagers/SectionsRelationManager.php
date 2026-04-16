@@ -2,13 +2,12 @@
 
 namespace App\Filament\Resources\DrugCombinationResource\RelationManagers;
 
+use App\Enums\SectionKeyEnum;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SectionsRelationManager extends RelationManager
 {
@@ -19,7 +18,7 @@ class SectionsRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\Select::make('section_key')
-                    ->options(\App\Enums\SectionKeyEnum::class)
+                    ->options(SectionKeyEnum::class)
                     ->required(),
                 Forms\Components\TextInput::make('section_title')
                     ->required()

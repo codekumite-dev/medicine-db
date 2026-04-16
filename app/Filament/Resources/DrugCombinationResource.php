@@ -2,26 +2,28 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\EditorialStatusEnum;
+use App\Enums\EvidenceLevelEnum;
+use App\Enums\SectionKeyEnum;
 use App\Filament\Resources\DrugCombinationResource\Pages;
 use App\Filament\Resources\DrugCombinationResource\RelationManagers;
 use App\Models\DrugCombination;
 use App\Models\DrugCombinationSection;
+use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use App\Enums\EvidenceLevelEnum;
-use App\Enums\EditorialStatusEnum;
-use App\Enums\SectionKeyEnum;
-use Filament\Forms\Components\Tabs;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Table;
 
 class DrugCombinationResource extends Resource
 {
     protected static ?string $model = DrugCombination::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $navigationGroup = 'Clinical Content';
 
     public static function form(Form $form): Form
@@ -54,11 +56,11 @@ class DrugCombinationResource extends Resource
                                     ->options(EditorialStatusEnum::class)->default(EditorialStatusEnum::Draft),
                                 Forms\Components\DateTimePicker::make('reviewed_at'),
                                 Forms\Components\Select::make('reviewed_by')
-                                    ->options(\App\Models\User::pluck('name', 'id'))
+                                    ->options(User::pluck('name', 'id'))
                                     ->searchable(),
                                 Forms\Components\DateTimePicker::make('published_at'),
                             ]),
-                    ])->columnSpanFull()
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -86,13 +88,13 @@ class DrugCombinationResource extends Resource
                                 ['drug_combination_id' => $record->id, 'section_key' => $key->value],
                                 [
                                     'section_title' => $key->label(),
-                                    'content'       => '',
+                                    'content' => '',
                                     'display_order' => $order++,
-                                    'is_visible'    => true,
+                                    'is_visible' => true,
                                 ]
                             );
                         }
-                    })
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\MedicineResource\Pages;
 
 use App\Filament\Resources\MedicineResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateMedicine extends CreateRecord

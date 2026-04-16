@@ -4,20 +4,21 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasRoles, HasUuids;
+    use HasFactory, HasRoles, HasUuids, Notifiable;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     /**
@@ -62,7 +63,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->is_active && $this->hasAnyRole([
             'super-admin', 'admin', 'clinical-editor',
-            'content-admin', 'data-operator', 'api-manager'
+            'content-admin', 'data-operator', 'api-manager',
         ]);
     }
 }

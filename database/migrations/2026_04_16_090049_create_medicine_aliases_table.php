@@ -12,13 +12,13 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('medicine_id');
             $table->foreign('medicine_id')->references('id')->on('medicines')->cascadeOnDelete();
-        
+
             $table->string('alias');
             $table->string('alias_type');  // brand_name, generic_name, spelling_variant, local_name, alternate_pack
             $table->string('language_code', 10)->default('en');
-        
+
             $table->timestamps();
-        
+
             $table->index(['medicine_id']);
             $table->index(['alias']);
         });

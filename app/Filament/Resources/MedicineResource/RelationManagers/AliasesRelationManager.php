@@ -7,8 +7,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AliasesRelationManager extends RelationManager
 {
@@ -22,7 +20,7 @@ class AliasesRelationManager extends RelationManager
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('alias_type')
-                    ->options(['brand_name'=>'Brand Name', 'generic_name'=>'Generic Name', 'spelling_variant'=>'Spelling Variant', 'local_name'=>'Local Name', 'alternate_pack'=>'Alternate Pack'])
+                    ->options(['brand_name' => 'Brand Name', 'generic_name' => 'Generic Name', 'spelling_variant' => 'Spelling Variant', 'local_name' => 'Local Name', 'alternate_pack' => 'Alternate Pack'])
                     ->required(),
                 Forms\Components\TextInput::make('language_code')->default('en'),
             ]);

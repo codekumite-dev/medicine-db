@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 abstract class Controller
 {
@@ -21,8 +21,8 @@ abstract class Controller
             'data' => $data,
             'meta' => [
                 'request_id' => (string) Str::uuid(),
-                'version'    => 'v1',
-                'timestamp'  => now()->toISOString(),
+                'version' => 'v1',
+                'timestamp' => now()->toISOString(),
             ],
         ]);
     }
@@ -32,8 +32,8 @@ abstract class Controller
         return $resource->additional([
             'meta' => [
                 'request_id' => (string) Str::uuid(),
-                'version'    => 'v1',
-                'timestamp'  => now()->toISOString(),
+                'version' => 'v1',
+                'timestamp' => now()->toISOString(),
             ],
         ])->response();
     }

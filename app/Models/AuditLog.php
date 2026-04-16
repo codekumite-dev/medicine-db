@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class AuditLog extends Model
 {
     use HasUuids;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
+
     protected $guarded = [];
 
     const UPDATED_AT = null; // Audit log only has created_at
@@ -35,14 +37,14 @@ class AuditLog extends Model
     public static function record(string $action, Model $model)
     {
         return self::create([
-            'user_id'        => auth()->id(),
-            'action'         => $action,
+            'user_id' => auth()->id(),
+            'action' => $action,
             'auditable_type' => get_class($model),
-            'auditable_id'   => $model->id,
-            'old_values'     => ($action === 'updated') ? $model->getOriginal() : null,
-            'new_values'     => ($action !== 'deleted') ? $model->getAttributes() : null,
-            'ip_address'     => request()->ip(),
-            'user_agent'     => request()->userAgent(),
+            'auditable_id' => $model->id,
+            'old_values' => ($action === 'updated') ? $model->getOriginal() : null,
+            'new_values' => ($action !== 'deleted') ? $model->getAttributes() : null,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
         ]);
     }
 }

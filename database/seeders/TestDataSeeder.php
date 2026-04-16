@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Enums\ApprovalStatusEnum;
+use App\Enums\DosageFormEnum;
+use App\Models\ApiClient;
 use App\Models\Manufacturer;
 use App\Models\Medicine;
-use App\Models\ApiClient;
-use App\Enums\DosageFormEnum;
-use App\Enums\ApprovalStatusEnum;
+use Illuminate\Database\Seeder;
 
 class TestDataSeeder extends Seeder
 {
@@ -48,7 +48,7 @@ class TestDataSeeder extends Seeder
 
         $token = $apiClient->createToken('test_token', ['medicines:read', 'medicines:search']);
 
-        $this->command->info("Test Data Seeded!");
-        $this->command->info("API Token: " . $token->plainTextToken);
+        $this->command->info('Test Data Seeded!');
+        $this->command->info('API Token: '.$token->plainTextToken);
     }
 }

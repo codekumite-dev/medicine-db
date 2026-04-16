@@ -1,17 +1,18 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\MedicineController;
-use App\Http\Controllers\Api\ManufacturerController;
 use App\Http\Controllers\Api\DrugCombinationController;
+use App\Http\Controllers\Api\ManufacturerController;
+use App\Http\Controllers\Api\MedicineController;
 use App\Http\Controllers\Api\SystemController;
+use App\Http\Middleware\CheckApiClientIpAllowlist;
+use App\Http\Middleware\TrackApiKeyUsage;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
     Route::middleware([
         'auth:sanctum',
-        \App\Http\Middleware\CheckApiClientIpAllowlist::class,
-        \App\Http\Middleware\TrackApiKeyUsage::class,
+        CheckApiClientIpAllowlist::class,
+        TrackApiKeyUsage::class,
     ])->group(function () {
         // Medicines
         Route::get('/medicines', [MedicineController::class, 'index']);
@@ -31,7 +32,7 @@ Route::prefix('v1')->middleware(['throttle:api'])->group(function () {
         Route::get('/drug-combinations/{slug}/faqs', [DrugCombinationController::class, 'faqs']);
         Route::get('/drug-combinations/{slug}/sections/{key}', [DrugCombinationController::class, 'section']);
     });
-    
+
     // System
     Route::get('/health', [SystemController::class, 'health']);
     Route::get('/version', [SystemController::class, 'version']);
