@@ -48,7 +48,7 @@ class MedicineCsvSeeder extends Seeder
             ->all();
         $now = now()->toDateTimeString();
 
-        $limit = 1000000;
+        $limit = 100000000;
 
         while (($row = fgetcsv($file)) !== false && $rowCount < $limit) {
             if (count($row) !== count($header)) {
