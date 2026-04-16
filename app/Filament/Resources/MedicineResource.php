@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class MedicineResource extends Resource
@@ -106,6 +107,23 @@ class MedicineResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query
+                ->select([
+                    'id',
+                    'name',
+                    'manufacturer_id',
+                    'type',
+                    'pack_size_label',
+                    'rx_required_header',
+                    'price',
+                    'approval_status',
+                    'is_discontinued',
+                    'updated_at',
+                ])
+                ->with(['manufacturer:id,name'])
+            )
+            ->defaultPaginationPageOption(25)
+            ->paginationPageOptions([25, 50, 100])
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('manufacturer.name')->searchable(),
